@@ -6,5 +6,6 @@
         public string Domain { get; set; }
         public string ClientId { get; set; }
         public string TenantId { get; set; }
+        public string RootPage { get; set; }
     }
 }

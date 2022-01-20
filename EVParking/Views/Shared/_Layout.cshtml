@@ -200,9 +200,8 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script>
         if ('serviceWorker' in navigator) {
-            console.log('registering sw');
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('https://localhost:7174/assets/js/sworker.js');
+                navigator.serviceWorker.register('/assets/js/sworker.js');
             });
         }
     </script>
