@@ -6,6 +6,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EVParking.Controllers
 {
+    [ApiController]
+    [Route("accounts")]
     public class AccountController : Controller
     {
         private UserManager<ApplicationUser> userManager;
@@ -22,7 +24,7 @@ namespace EVParking.Controllers
             return View();
         }
 
-        [HttpPost]
+        [HttpPost("login")]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login([Required][EmailAddress] string email, [Required] string password, string returnurl)
@@ -39,6 +41,29 @@ namespace EVParking.Controllers
                     }
                 }
                 ModelState.AddModelError(nameof(email), "Login Failed: Invalid Email or Password");
+            }
+
+            return View();
+        }
+
+        [HttpPost("login2")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Login2(User user)
+        {
+            if (ModelState.IsValid)
+            {
+                ApplicationUser appUser = await userManager.FindByEmailAsync(user.Email);
+                if (appUser != null)
+                {
+                    Microsoft.AspNetCore.Identity.SignInResult result = await signInManager.PasswordSignInAsync(appUser, user.Password, false, false);
+                    if (result.Succeeded)
+                    {
+                        await userManager.AddLoginAsync(appUser, new UserLoginInfo("AzureAd", "", ""));
+                        await userManager.AddClaimAsync(appUser, new System.Security.Claims.Claim("Email", appUser.Email));
+                        return Redirect("/secured");
+                    }
+                }
+                ModelState.AddModelError(nameof(user.Email), "Login Failed: Invalid Email or Password");
             }
 
             return View();

@@ -13,5 +13,6 @@ namespace EVParking.Models
 
         [Required]
         public string Password { get; set; }
+
     }
 }

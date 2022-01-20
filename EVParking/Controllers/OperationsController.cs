@@ -5,6 +5,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EVParking.Controllers
 {
+    [ApiController]
+    [Route("operations")]
     public class OperationsController : Controller
     {
         private UserManager<ApplicationUser> userManager;
@@ -18,7 +20,7 @@ namespace EVParking.Controllers
 
         public ViewResult Create() => View();
 
-        [HttpPost]
+        [HttpPost("create")]
         public async Task<IActionResult> Create(User user)
         {
             if (ModelState.IsValid)
@@ -28,7 +30,7 @@ namespace EVParking.Controllers
                     UserName = user.Name,
                     Email = user.Email
                 };
-
+                
                 IdentityResult result = await userManager.CreateAsync(appUser, user.Password);
                 if (result.Succeeded)
                     ViewBag.Message = "User Created Successfully";

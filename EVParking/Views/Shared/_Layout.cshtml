@@ -1,59 +1,210 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - EVParking</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/EVParking.styles.css" asp-append-version="true" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>@ViewData["Title"] - EVChargingApp</title>
+    <link href="~/assets/css/app.min.css" rel="stylesheet" />
+    <link rel="manifest" href="~/manifest.webmanifest" />
+    <link rel="shortcut icon" href="~/assets/images/favicon.ico" type="image/x-icon" />
+
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">EVParking</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+    <div class="app is-folded">
+        <div class="layout">
+            <!-- Header START -->
+            <div class="header">
+                <div class="logo logo-dark">
+                    <a asp-area="" asp-controller="Home" asp-action="Index">
+                        <img src="~/assets/images/logo/logo.png" alt="Logo">
+                        <img class="logo-fold" src="~/assets/images/logo/logo-fold.png" alt="Logo">
+                    </a>
+                </div>
+                <div class="logo logo-white">
+                    <a asp-area="" asp-controller="Home" asp-action="Index">
+                        <img src="~/assets/images/logo/logo-white.png" alt="Logo">
+                        <img class="logo-fold" src="~/assets/images/logo/logo-fold-white.png" alt="Logo">
+                    </a>
+                </div>
+                <div class="nav-wrap">
+                    <ul class="nav-left">
+                        <li class="desktop-toggle">
+                            <a href="javascript:void(0);">
+                                <i class="anticon"></i>
+                            </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        <li class="mobile-toggle">
+                            <a href="javascript:void(0);">
+                                <i class="anticon"></i>
+                            </a>
                         </li>
-                        @{
+                        <li>
+                            <a href="javascript:void(0);" data-toggle="modal" data-target="#search-drawer">
+                                <i class="anticon anticon-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                    <ul class="nav-right">
+                         @{
                             if (User?.Identity?.IsAuthenticated ?? false)
                             {
-                                <li class="nav-item">
-                                    <u>Welcome: @User.Identity.Name</u>
-                                    <a asp-controller="Account" asp-action="Logout" class="btn btn-danger">Logout</a>
+                                <li>
+                                    <a href="~/Secured"><i title="@User.Identity.Name" class="anticon anticon-user"></i></a>
                                 </li>
- 
+                                <li class="nav-item">
+                                    <a asp-controller="Account" title="Útskráning" asp-action="SignOut"><i class="anticon anticon-logout"></i></a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li>
+                                    <a asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignIn"><i class="anticon anticon-lock"></i></a>
+                                </li>
                             }
                         }
+                       
+                        <li>
+                            <a href="javascript:void(0);" data-toggle="modal" data-target="#quick-view">
+                                <i class="anticon anticon-appstore"></i>
+                            </a>
+                        </li>
+                        </ul>
+                    </div>
+            </div>
+            <!-- Header END -->
+            <!-- Side Nav START -->
+            <div class="side-nav">
+                <div class="side-nav-inner">
+                    <ul class="side-nav-menu scrollable">
+                        <li class="nav-item dropdown">
+                            <a href="">
+                                <span class="icon-holder">
+                                    <i class="anticon anticon-dashboard"></i>
+                                </span>
+                                <span class="title">Single Link</span>
+                            </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="dropdown-toggle" href="javascript:void(0);">
+                                <span class="icon-holder">
+                                    <i class="anticon anticon-pie-chart"></i>
+                                </span>
+                                <span class="title">Dropdown</span>
+                                <span class="arrow">
+                                    <i class="arrow-icon"></i>
+                                </span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a href="">Dropdown 1</a>
+                                </li>
+                                <li>
+                                    <a href="">Dropdown 2</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="dropdown-toggle" href="javascript:void(0);">
+                                <span class="icon-holder">
+                                    <i class="anticon anticon-file"></i>
+                                </span>
+                                <span class="title">Multi Level</span>
+                                <span class="arrow">
+                                    <i class="arrow-icon"></i>
+                                </span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li class="nav-item dropdown">
+                                    <a href="javascript:void(0);">
+                                        <span>Level 1</span>
+                                        <span class="arrow">
+                                            <i class="arrow-icon"></i>
+                                        </span>
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <a href="">Level 2.1</a>
+                                        </li>
+                                        <li>
+                                            <a href="">Level 2.2</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
                     </ul>
                 </div>
             </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+            <!-- Side Nav END -->
+            <!-- Page Container START -->
+            <div class="page-container">
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2022 - EVParking - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                <!-- Content Wrapper START -->
+                <div class="main-content">
+                    <!-- Content goes Here -->
+                    @RenderBody()
+                </div>
+                <!-- Content Wrapper END -->
+                <!-- Footer START -->
+                <footer class="footer">
+                    <div class="footer-content">
+                        <p class="m-b-0">&copy; 2022 - EVCharingApp</p>
+                        <span>
+                            &nbsp;&nbsp;<a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        </span>
+                    </div>
+                </footer>
+                <!-- Footer END -->
+
+            </div>
+            <!-- Page Container END -->
+            <!-- Search Start-->
+            <div class="modal modal-left fade search" id="search-drawer">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header justify-content-between align-items-center">
+                            <h5 class="modal-title">Search</h5>
+                            <button type="button" class="close" data-dismiss="modal">
+                                <i class="anticon anticon-close"></i>
+                            </button>
+                        </div>
+                        <div class="modal-body scrollable">
+                            <div class="input-affix">
+                                <i class="prefix-icon anticon anticon-search"></i>
+                                <input type="text" class="form-control" placeholder="Search">
+                            </div>
+                            <!-- Content goes Here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Search End-->
+            <!-- Quick View START -->
+            <div class="modal modal-right fade quick-view" id="quick-view">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header justify-content-between align-items-center">
+                            <h5 class="modal-title">Quick View</h5>
+                        </div>
+                        <div class="modal-body scrollable">
+                            <!-- Content goes Here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Quick View END -->
         </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    </div>
+     <script src="~/assets/js/vendors.min.js" asp-append-version="true"></script>
+    <script src="~/assets/js/app.min.js" asp-append-version="true"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/assets/js/sworker.js');
+            });
+        }
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
