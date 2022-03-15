@@ -34,7 +34,7 @@ namespace EVParking
 						//FormProperties formProps = JsonConvert.DeserializeObject<FormProperties>(responseBody);
 						
 					}
-					catch (Exception ex)
+					catch (Exception)
 					{
 						//manager.ErrorService.Save(ex, responseBody);
 					}

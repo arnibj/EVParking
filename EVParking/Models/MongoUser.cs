@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
+﻿using Microsoft.AspNetCore.Identity;
+using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
 using System.Runtime.Caching;
 
@@ -7,6 +8,8 @@ namespace EVParking.Models
     public class MongoUser :DataBase
     {
         private readonly IMongoCollection<ApplicationUser> usersCollection;
+        //private readonly UserManager<ApplicationUser> userManager;
+
 
         [BsonId]
         [BsonElement("_id")]
@@ -43,17 +46,17 @@ namespace EVParking.Models
             catch (Exception ex)
             {
                 utility.LogException(ex);
-                return null;
             }
+            return new List<ApplicationUser>();
         }
 
-        public async Task<ApplicationUser> GetUserByIdAsync(Guid id)
+        public async Task<ApplicationUser?> GetUserByIdAsync(Guid id)
         {
             List<ApplicationUser> items = await GetItemsFromMongo();
             return items.SingleOrDefault(l => l.Id == id);
         }
 
-        public async Task<ApplicationUser> GetUserByIdAsync(string username)
+        public async Task<ApplicationUser?> GetUserByIdAsync(string username)
         {
             List<ApplicationUser> items = await GetItemsFromMongo();
             return items.SingleOrDefault(l => l.UserName == username);
@@ -63,6 +66,32 @@ namespace EVParking.Models
         {
             List<ApplicationUser> items = await GetItemsFromMongo();
             return items.Any(l => l.UserName == username);
+        }
+
+        public async Task<bool> AddUserIfItDoesNotExist(string username, string name)
+        {
+            if(username == null)
+                return false;
+
+            bool userExists = await DoesUserExist(username);
+            if (!userExists)
+            {
+                ApplicationUser appUser = new()
+                {
+                    UserName = username,
+                    Email = username
+                };
+                //string password = "A";
+                //List<string> errors = new();
+                //IdentityResult result = await userManager.CreateAsync(appUser, password);
+                //if (!result.Succeeded)
+                //{
+                //    foreach (IdentityError error in result.Errors)
+                //        errors.Add(error.Description);
+                //    return false;
+                //}
+            }
+            return true;
         }
     }
 }

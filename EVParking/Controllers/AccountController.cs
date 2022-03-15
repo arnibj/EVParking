@@ -1,4 +1,5 @@
 ﻿using EVParking.Models;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -60,12 +61,15 @@ namespace EVParking.Controllers
                     {
                         await userManager.AddLoginAsync(appUser, new UserLoginInfo("AzureAd", "", ""));
                         await userManager.AddClaimAsync(appUser, new System.Security.Claims.Claim("Email", appUser.Email));
-                        return Redirect("/secured");
+                        await userManager.AddClaimAsync(appUser, new System.Security.Claims.Claim("Name", appUser.UserName));
+
                     }
                 }
-                ModelState.AddModelError(nameof(user.Email), "Login Failed: Invalid Email or Password");
+                else
+                {
+                    ModelState.AddModelError(nameof(user.Email), "Login Failed: Invalid Email or Password");
+                }
             }
-
             return View();
         }
 

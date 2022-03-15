@@ -1,4 +1,7 @@
-﻿namespace EVParking
+﻿using Microsoft.AspNetCore.Authentication;
+using System.Security.Claims;
+
+namespace EVParking
 {
     public class Utilities
     {
