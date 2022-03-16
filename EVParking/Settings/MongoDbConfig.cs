@@ -15,10 +15,10 @@ namespace EVParking.Settings
 
     public class AppDbContext
     {
-        private UserManager<ApplicationUser> userManager;
+        private UserManager<MongoUser> userManager;
 
         public IMongoDatabase MongoDatabase { get; set; }
-        public AppDbContext(UserManager<ApplicationUser> userManager)
+        public AppDbContext(UserManager<MongoUser> userManager)
         {
             MongoDbConfig config = new();
             var client = new MongoClient(config.ConnectionString);
@@ -28,9 +28,9 @@ namespace EVParking.Settings
 
         public async Task<bool> CreateUser(User user)
         {
-            ApplicationUser appUser = new()
+            MongoUser appUser = new()
             {
-                UserName = user.Name,
+                Name = user.Name,
                 Email = user.Email
             };
 

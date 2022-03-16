@@ -49,7 +49,7 @@
                             if (User?.Identity?.IsAuthenticated ?? false)
                             {
                                 MongoUser u = new();
-                                bool userAdded = await u.AddUserIfItDoesNotExist(User.Claims);
+                                bool userAdded = await u.AddUser(User.Claims);
                                 <li>
                                     <a href="~/Secured" title="@User.Identity.Name"><i class="anticon anticon-user"></i></a>
                                 </li>

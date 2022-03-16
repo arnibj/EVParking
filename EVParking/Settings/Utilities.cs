@@ -5,7 +5,7 @@ namespace EVParking
 {
     public class Utilities
     {
-        public async void LogException(Exception ex)
+        public void LogException(Exception ex)
         {
             Console.WriteLine(ex.Message);
         }
