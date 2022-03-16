@@ -49,18 +49,18 @@
                             if (User?.Identity?.IsAuthenticated ?? false)
                             {
                                 MongoUser u = new();
-                                bool userAdded = await u.AddUserIfItDoesNotExist(User.Claims.SingleOrDefault(c => c.Type == "preferred_username")?.Value, User.Claims.SingleOrDefault(c => c.Type == "name")?.Value);
+                                bool userAdded = await u.AddUserIfItDoesNotExist(User.Claims);
                                 <li>
                                     <a href="~/Secured" title="@User.Identity.Name"><i class="anticon anticon-user"></i></a>
                                 </li>
                                 <li class="nav-item">
-                                    <a asp-controller="Account" title="Útskráning" asp-action="SignOut"><i class="anticon anticon-logout"></i></a>
+                                    <a asp-area="MicrosoftIdentity" asp-controller="Account" title="Logout" asp-action="SignOut"><i class="anticon anticon-logout"></i></a>
                                 </li>
                             }
                             else
                             {
                                 <li>
-                                    <a asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignIn"><i class="anticon anticon-lock"></i></a>
+                                    <a asp-area="MicrosoftIdentity" title="Login" asp-controller="Account" asp-action="SignIn"><i class="anticon anticon-lock"></i></a>
                                 </li>
                             }
                         }

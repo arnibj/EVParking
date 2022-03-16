@@ -74,7 +74,7 @@ namespace EVParking.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> Logout()
+        public async Task<IActionResult> ByeBye()
         {
             await signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");

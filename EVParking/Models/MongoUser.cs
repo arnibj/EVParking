@@ -2,6 +2,7 @@
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
 using System.Runtime.Caching;
+using System.Security.Claims;
 
 namespace EVParking.Models
 {
@@ -68,9 +69,12 @@ namespace EVParking.Models
             return items.Any(l => l.UserName == username);
         }
 
-        public async Task<bool> AddUserIfItDoesNotExist(string username, string name)
+        public async Task<bool> AddUserIfItDoesNotExist(IEnumerable<Claim> claims)
         {
-            if(username == null)
+            string username = claims.SingleOrDefault(c => c.Type == "preferred_username")?.Value;
+            string name = claims.SingleOrDefault(c => c.Type == "name")?.Value;
+
+            if (username == null)
                 return false;
 
             bool userExists = await DoesUserExist(username);
