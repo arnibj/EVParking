@@ -2,7 +2,7 @@
 using MongoDB.Driver;
 using System.Runtime.Caching;
 
-namespace EVParking.Models
+namespace EVParking
 {
     public class Station :DataBase
     {
@@ -52,7 +52,9 @@ namespace EVParking.Models
                 }
                 Station i = new();
                 var result = await i.stationCollection.FindAsync(FilterDefinition<Station>.Empty);
-                list = result.ToList();
+                list = result.ToList()
+                    .OrderBy(o => o.Number)
+                    .ToList();
 
                 if (list.Count == 0)
                 {
