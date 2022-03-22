@@ -34,6 +34,7 @@ namespace EVParking
 
             //Setup the db connection
             
+            
             mongoConnection = MongoClientSettings.FromConnectionString("mongodb://localhost:27017");
             mongoConnection.ConnectTimeout = TimeSpan.FromSeconds(5);
             mongoConnection.ServerSelectionTimeout = TimeSpan.FromSeconds(5);
