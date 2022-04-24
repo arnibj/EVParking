@@ -19,3 +19,179 @@
         <dd>@prop.Value</dd>
     }
 </dl>
+
+@{
+    PushClient p = new PushClient();
+    var clients = await p.GetItems();
+    if(clients.Count > 0)
+    {
+        <h3>Push clients</h3>
+        foreach(var client in clients)
+        {
+            <dt>@client.ClientId</dt>
+            <dd>@client.UserName</dd>
+        }
+    }
+    clients = null;
+    p = null;
+}
+<script type="text/javascript" src="assets/vendors/jquery/dist/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.3/fetch.min.js"></script>
+
+
+
+<div class="form-group d-flex align-items-center">
+    <div class="switch m-r-10">
+        <input type="checkbox" id="cbNotifyAllowed" onclick="fnUpdateNotify()" checked="">
+        <label for="cbNotifyAllowed"></label>
+    </div>
+    <label id="lblNotifyTxt" for="cbNotifyAllowed">Allow push notifications to be sent to this device</label>
+</div>
+
+<script>
+var notifyBox = document.getElementById("cbNotifyAllowed");
+var lbl = document.getElementById("lblNotifyTxt");
+if ('serviceWorker' in navigator) 
+{
+    console.log("service worker is in navigator");
+    navigator.serviceWorker.register('/assets/js/sworker.js').then(function (swReg) {
+    swRegistration = swReg;}).catch(function (error){console.error('Service Worker Error', error);});
+    var notificationSettingFromLocalStorage = localStorage.getItem("PushNotificationsAllowed");
+    if (notificationSettingFromLocalStorage != null && notificationSettingFromLocalStorage == 'true') 
+    {
+        notifyBox.checked = true;
+    }
+    else
+    {
+        notifyBox.checked = false;
+    }
+}
+else 
+{
+    notifyBox.style.display = "none";
+    lbl.style.display = "none";
+}
+
+function fnUpdateNotify() 
+{
+    console.log(notifyBox.checked);
+    if (notifyBox.checked) 
+    {
+        localStorage.setItem("PushNotificationsAllowed", 'true');
+        subscribeUser();
+    } 
+    else 
+    {
+        unsubscribeUser();
+        localStorage.setItem("PushNotificationsAllowed", 'false');
+    }
+}
+
+'use strict';
+const applicationServerPublicKey = 'BPamIAYhRbA8FL7dSmPpVo1vv3StKcpAPVl6Xg_e2WiQKnfz-WvXBFheOL0Mxzwr2kmGAwPR1IrJXWOytqe9jWU';
+
+function urlB64ToUint8Array(base64String) {
+                    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+                    const base64 = (base64String + padding)
+                      .replace(/\-/g, '+')
+                      .replace(/_/g, '/');
+
+                    const rawData = window.atob(base64);
+                    const outputArray = new Uint8Array(rawData.length);
+
+                    for (let i = 0; i < rawData.length; ++i) {
+                        outputArray[i] = rawData.charCodeAt(i);
+                    }
+                    return outputArray;
+}
+
+function updateSubscriptionOnServer(subscription) 
+{
+    console.log(subscription);
+    if (subscription) 
+    {
+        console.log(JSON.stringify(subscription));
+        localStorage.setItem("push-sub", JSON.stringify(subscription));
+        $.ajax({
+            contentType: "application/json",
+            type: "POST",
+            url: "../api/push/subscription/",
+            data: JSON.stringify(subscription),
+            withCredentials: false,
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) 
+            {
+                console.log("response is " + data);
+                if (data != '') 
+                {
+                    localStorage.setItem("clientid", data);
+                }else{
+                    console.log("User was not registered successfully");
+                }
+            },
+            error: function(data)
+            {
+                console.log(data);
+            }
+        });
+    }
+}
+
+function subscribeUser() 
+{
+    const applicationServerKey = urlB64ToUint8Array(applicationServerPublicKey);
+    swRegistration.pushManager.subscribe(
+        { 
+            userVisibleOnly: true,
+            applicationServerKey: applicationServerKey
+        }).then(function (subscription) 
+        { 
+            console.log('Permission has been approved in browser.');
+            updateSubscriptionOnServer(subscription);
+            isSubscribed = true;
+        }).catch(function (err) 
+        {
+            console.log('Failed to subscribe the user: ', err);
+        });
+}
+function unsubscribeUser() 
+{
+    swRegistration.pushManager.getSubscription().then(function (subscription) 
+    {
+        if (subscription) 
+        {
+            return subscription.unsubscribe();
+        }
+    }).catch(function (error) {
+        console.log('Error unsubscribing', error);
+    }).then(function () {
+        if (localStorage.getItem("push-sub") != null) 
+        {
+            //console.log(localStorage.getItem("push-sub"));
+            $.ajax({
+            contentType: "application/json",
+            type: "POST",
+            url: "../api/push/unsubscribe/",
+            data: localStorage.getItem("push-sub"),
+            withCredentials: false,
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) 
+            {
+                console.log(data);
+                            if (data == '1') 
+                            {
+                                localStorage.removeItem("clientid");
+                                localStorage.removeItem("push-sub");
+                                console.log('User is unsubscribed.');
+                                isSubscribed = false;
+                            }
+            },
+            error: function(data)
+            {
+                console.log(data);
+            }
+            });        
+        }
+    });
+}
+</script>
