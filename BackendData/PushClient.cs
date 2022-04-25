@@ -1,5 +1,4 @@
-﻿using BackendData;
-using MongoDB.Bson.Serialization.Attributes;
+﻿using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
 using System.Runtime.Caching;
 using System.Security.Claims;
@@ -11,7 +10,7 @@ namespace BackendData
         /// <summary>
         /// Class to handle Push clients, which represents devices that can be used to send push notifications by the system
         /// </summary>
-        private readonly IMongoCollection<PushClient> rowCollection;
+        private readonly IMongoCollection<PushClient> clientCollection;
         private ObjectCache cache = MemoryCache.Default;
 
         #region Properties
@@ -28,7 +27,7 @@ namespace BackendData
 
         public PushClient()
         {
-            rowCollection = db.GetCollection<PushClient>("PushClients");
+            clientCollection = db.GetCollection<PushClient>("PushClients");
         }
 
         /// <summary>
@@ -54,7 +53,7 @@ namespace BackendData
                     DateAdded = p.DateAdded,
                     UserName = p.UserName
                 };
-                await rowCollection.InsertOneAsync(client);
+                await clientCollection.InsertOneAsync(client);
                 cache.Remove("PushClients");
             
             return true;
@@ -73,7 +72,7 @@ namespace BackendData
             try
             {
                 FilterDefinition<PushClient> idFilterDefinition = Builders<PushClient>.Filter.Eq(client => client.ClientId, p.ClientId);
-                await rowCollection.DeleteOneAsync(idFilterDefinition);
+                await clientCollection.DeleteOneAsync(idFilterDefinition);
                 cache.Remove("PushClients");
                 return true;
             }
@@ -99,10 +98,10 @@ namespace BackendData
                     return list;
                 }
                 PushClient i = new();
-                var result = await i.rowCollection.FindAsync(FilterDefinition<PushClient>.Empty);
+                var result = await i.clientCollection.FindAsync(FilterDefinition<PushClient>.Empty);
                 list = result.ToList();
                 cache.Add("PushClients", list, cacheItemPolicy);
-                return list;
+                return (List<PushClient>)list;
             }
             catch (Exception ex)
             {

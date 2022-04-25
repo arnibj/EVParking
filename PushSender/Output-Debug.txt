@@ -1,0 +1,14 @@
+﻿'PushSender.exe' (CLR v4.0.30319: DefaultDomain): Loaded 'C:\WINDOWS\Microsoft.Net\assembly\GAC_32\mscorlib\v4.0_4.0.0.0__b77a5c561934e089\mscorlib.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.
+'PushSender.exe' (CLR v4.0.30319: DefaultDomain): Loaded 'C:\Users\notandi\Documents\PushSender\PushSender\bin\Debug\PushSender.exe'. Symbols loaded.
+'PushSender.exe' (CLR v4.0.30319: PushSender.exe): Loaded 'C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Windows.Forms\v4.0_4.0.0.0__b77a5c561934e089\System.Windows.Forms.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.
+'PushSender.exe' (CLR v4.0.30319: PushSender.exe): Loaded 'C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System\v4.0_4.0.0.0__b77a5c561934e089\System.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.
+'PushSender.exe' (CLR v4.0.30319: PushSender.exe): Loaded 'C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Drawing\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Drawing.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.
+'PushSender.exe' (CLR v4.0.30319: PushSender.exe): Loaded 'C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Configuration\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Configuration.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.
+'PushSender.exe' (CLR v4.0.30319: PushSender.exe): Loaded 'C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Core\v4.0_4.0.0.0__b77a5c561934e089\System.Core.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.
+'PushSender.exe' (CLR v4.0.30319: PushSender.exe): Loaded 'C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Xml\v4.0_4.0.0.0__b77a5c561934e089\System.Xml.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.
+'PushSender.exe' (CLR v4.0.30319: PushSender.exe): Loaded 'C:\Users\notandi\Documents\PushSender\PushSender\bin\Debug\WebPush.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.
+'PushSender.exe' (CLR v4.0.30319: PushSender.exe): Loaded 'C:\Users\notandi\Documents\PushSender\PushSender\bin\Debug\Newtonsoft.Json.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.
+'PushSender.exe' (CLR v4.0.30319: PushSender.exe): Loaded 'C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\Remote Debugger\x86\Runtime\Microsoft.VisualStudio.Debugger.Runtime.Desktop.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.
+PushSender.PushMessage.PushClient.**get** returned null.
+
+The program '[13404] PushSender.exe' has exited with code 4294967295 (0xffffffff).
