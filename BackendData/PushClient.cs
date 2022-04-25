@@ -4,7 +4,7 @@ using MongoDB.Driver;
 using System.Runtime.Caching;
 using System.Security.Claims;
 
-namespace EVParking.Models
+namespace BackendData
 {
     public class PushClient : DataBase
     {

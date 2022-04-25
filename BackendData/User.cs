@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace EVParking.Models
+namespace BackendData
 {
     public class User
     {

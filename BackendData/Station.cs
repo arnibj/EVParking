@@ -2,7 +2,7 @@
 using MongoDB.Driver;
 using System.Runtime.Caching;
 
-namespace EVParking
+namespace BackendData
 {
     /// <summary>
     /// The Station class constructs objects that represent charging stations

@@ -1,10 +1,9 @@
-﻿using Microsoft.AspNetCore.Identity;
-using MongoDB.Bson.Serialization.Attributes;
+﻿using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
 using System.Runtime.Caching;
 using System.Security.Claims;
 
-namespace EVParking.Models
+namespace BackendData
 {
     public class MongoUser :DataBase
     {
@@ -18,7 +17,7 @@ namespace EVParking.Models
         public string? Name { get; set; }
         public List<DateTime>? Logins { get; set; }
 
-        public List<ApplicationRole>? Roles { get; set; }
+        //public List<ApplicationRole>? Roles { get; set; }
 
         public MongoUser()
         {
@@ -26,12 +25,12 @@ namespace EVParking.Models
             Email = string.Empty;
             Name = string.Empty;
             Logins = new List<DateTime>();
-            Roles = new List<ApplicationRole>();
+            //Roles = new List<ApplicationRole>();
 
-            ApplicationRole applicationRole = new();
-            applicationRole.Name = "User";
+            //ApplicationRole applicationRole = new();
+            //applicationRole.Name = "User";
 
-            Roles.Add(applicationRole);
+            //Roles.Add(applicationRole);
         }
 
         /// <summary>

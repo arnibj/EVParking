@@ -1,14 +1,17 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using System.Security.Claims;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace EVParking
+namespace BackendData
 {
     public class Utilities
     {
-        public void LogException(Exception ex)
-        {
-            Console.WriteLine(ex.Message);
-        }
+		public void LogException(Exception ex)
+		{
+			Console.WriteLine(ex.Message);
+		}
 
 		public void LogTrace(Exception ex)
 		{

@@ -7,9 +7,23 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Views\Operations\**" />
+    <Content Remove="Views\Operations\**" />
+    <EmbeddedResource Remove="Views\Operations\**" />
+    <None Remove="Views\Operations\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Controllers\AccountController.cs" />
     <Compile Remove="Controllers\OperationsController.cs" />
+    <Compile Remove="DataBase.cs" />
+    <Compile Remove="Models\ApplicationRole.cs" />
     <Compile Remove="Models\ApplicationUser.cs" />
+    <Compile Remove="Models\MongoUser.cs" />
+    <Compile Remove="Models\Station.cs" />
+    <Compile Remove="Models\User.cs" />
+    <Compile Remove="Settings\DataBase.cs" />
+    <Compile Remove="Settings\Utilities.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,7 +34,11 @@
     <PackageReference Include="MongoDB.Driver" Version="2.15.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
-    <PackageReference Include="System.Runtime.Caching" Version="6.0.0" />
+    <PackageReference Include="System.Runtime.Caching" Version="7.0.0-preview.3.22175.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BackendData\BackendData.csproj" />
   </ItemGroup>
 
 </Project>

@@ -4,12 +4,12 @@
 
 <dl>
     @{
-        Station s = new();
-        List<Station> stations = await s.Get();
-        foreach(Station station in stations)
+        BackendData.Station s = new();
+        List<BackendData.Station> stations = await s.Get();
+        foreach(BackendData.Station station in stations)
         {
             <dt>@station.Name</dt>
-            <dt>@station.Status.ToString()</dt>
+            <dt>@station.Number.ToString()</dt>
         }
     }
 </dl>

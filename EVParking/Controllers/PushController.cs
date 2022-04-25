@@ -9,8 +9,8 @@ namespace EVParking.Controllers
     {
         public class Keys
         {
-            public string p256dh { get; set; }
-            public string auth { get; set; }
+            public string? P256dh { get; set; }
+            public string? Auth { get; set; }
         }
         public class PushNotificationSubscription
         {
@@ -23,38 +23,45 @@ namespace EVParking.Controllers
         [Route("api/push/subscription")]
         public async Task<string> pushsubscription(PushNotificationSubscription s)
         {
+            Helper h = new();
+
             try
             {
                 Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("is-IS");
                 Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo("is-IS");
-                
-                string user = PushClient.ReturnUserClaimTypeValue((ClaimsIdentity)User.Identity, "preferred_username");
-
-                if (s != null && !string.IsNullOrEmpty(user))
+                if (User != null && User.Identity != null)
                 {
-                    if (!s.ExpirationTime.HasValue)
+                    var user = PushClient.ReturnUserClaimTypeValue((ClaimsIdentity)User.Identity, "preferred_username");
+                    if (s != null && !string.IsNullOrEmpty(user))
                     {
-                        s.ExpirationTime = DateTime.Now.AddYears(10);
+                        if (!s.ExpirationTime.HasValue)
+                        {
+                            s.ExpirationTime = DateTime.Now.AddYears(10);
+                        }
+                        Guid clientID = Guid.NewGuid();
+                        PushClient p = new()
+                        {
+                            P256dh = s.Keys?.P256dh,
+                            ExpirationTime = s.ExpirationTime,
+                            Endpoint = s.Endpoint,
+                            Auth = s.Keys?.Auth,
+                            UserName = user,
+                            DateAdded = DateTime.Now,
+                            ClientId = clientID
+                        };
+                        PushClient pushClient = new();
+                        await pushClient.AddClient(p);
+                        return clientID.ToString();
                     }
-                    Guid clientID = Guid.NewGuid();
-                    PushClient p = new()
-                    {
-                        P256dh = s.Keys?.p256dh,
-                        ExpirationTime = s.ExpirationTime,
-                        Endpoint = s.Endpoint,
-                        Auth = s.Keys?.auth,
-                        UserName = user,
-                        DateAdded = DateTime.Now,
-                        ClientId = clientID
-                    };
-                    PushClient pushClient = new();
-                    await pushClient.AddClient(p);
-                    return clientID.ToString();
+                }
+                else
+                {
+                    h.LogTrace("User identity could not be verified, client could not be stored");
                 }
             }
             catch (Exception ex)
             {
-                
+                h.LogException(ex);
             }
             return String.Empty;
         }
@@ -65,7 +72,7 @@ namespace EVParking.Controllers
         {
             PushClient p = new PushClient();
             var pushClient = await p.GetItems();
-            var c = pushClient.FirstOrDefault(m => m.Auth == s.Keys?.auth && m.P256dh == s.Keys?.p256dh);
+            var c = pushClient.FirstOrDefault(m => m.Auth == s.Keys?.Auth && m.P256dh == s.Keys?.P256dh);
             if (c != null)
             {
                 bool success = await p.RemoveClient(c);

@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="ApplicationRole.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MongoDB.Driver" Version="2.15.0" />
+    <PackageReference Include="MongoDB.Driver.Core" Version="2.15.0" />
+    <PackageReference Include="System.Runtime.Caching" Version="7.0.0-preview.3.22175.4" />
+  </ItemGroup>
+
+</Project>
