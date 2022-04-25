@@ -1,4 +1,4 @@
-﻿namespace EVParking
+﻿namespace EVParking.Models
 {
     public class Helper
     {

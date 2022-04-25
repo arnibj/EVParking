@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32104.313
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EVParking", "EVParking\EVParking.csproj", "{A60A8D8B-73CF-4A05-B0F3-3C0EAE09B6A5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EVParkingWeb", "EVParking\EVParkingWeb.csproj", "{A60A8D8B-73CF-4A05-B0F3-3C0EAE09B6A5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackendData", "BackendData\BackendData.csproj", "{569E1159-8BFD-4C0C-84EA-8293A9E16606}"
 EndProject

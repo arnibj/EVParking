@@ -14,10 +14,10 @@ namespace EVParking.Settings
 
     public class AppDbContext
     {
-        private UserManager<MongoUser> userManager;
+        private UserManager<User> userManager;
 
         public IMongoDatabase MongoDatabase { get; set; }
-        public AppDbContext(UserManager<MongoUser> userManager)
+        public AppDbContext(UserManager<User> userManager)
         {
             MongoDbConfig config = new();
             var client = new MongoClient(config.ConnectionString);
@@ -25,19 +25,19 @@ namespace EVParking.Settings
             this.userManager = userManager;
         }
 
-        public async Task<bool> CreateUser(User user)
-        {
-            MongoUser appUser = new()
-            {
-                Name = user.Name,
-                Email = user.Email
-            };
+        //public async Task<bool> CreateUser(User user)
+        //{
+        //    MongoUser appUser = new()
+        //    {
+        //        Name = user.Name,
+        //        Email = user.Email
+        //    };
 
-            IdentityResult result = await userManager.CreateAsync(appUser, user.Password);
-            if (result.Succeeded)
-                return true;
-            else
-                return false;
-        }
+        //    IdentityResult result = await userManager.CreateAsync(appUser, user.Password);
+        //    if (result.Succeeded)
+        //        return true;
+        //    else
+        //        return false;
+        //}
     }
 }
