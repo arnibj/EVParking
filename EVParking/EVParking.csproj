@@ -15,11 +15,13 @@
 
   <ItemGroup>
     <Compile Remove="Controllers\AccountController.cs" />
+    <Compile Remove="Controllers\ApplicationRole.cs" />
     <Compile Remove="Controllers\OperationsController.cs" />
     <Compile Remove="DataBase.cs" />
     <Compile Remove="Models\ApplicationRole.cs" />
     <Compile Remove="Models\ApplicationUser.cs" />
     <Compile Remove="Models\MongoUser.cs" />
+    <Compile Remove="Models\PushClient.cs" />
     <Compile Remove="Models\Station.cs" />
     <Compile Remove="Models\User.cs" />
     <Compile Remove="Settings\DataBase.cs" />
