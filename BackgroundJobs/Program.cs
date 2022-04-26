@@ -52,12 +52,16 @@ namespace BackgroundJobs
                             subject = subject,
                             icon = m.Icon,
                             primarykey = m.Id.ToString(),
-                            tag = "tag"
+                            tag = m.Title,
+                            category = "category",
+                            subtitle = "sub-title",
+                            url = "https://localhost:7174/Messages"
                         };
 
                         var webPushClient = new WebPushClient();
                         try
                         {
+                            Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(mp));
                             await webPushClient.SendNotificationAsync(subscription, Newtonsoft.Json.JsonConvert.SerializeObject(mp), vapidDetails);
                         }
                         catch (WebPushException exception)

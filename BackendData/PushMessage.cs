@@ -35,10 +35,10 @@ namespace BackendData
                 PushNotification m = new()
                 {
                     Id = 1,
-                    Badge = String.Empty,
+                    Badge = string.Empty,
                     Title = "Test",
                     Body = "Test Body",
-                    Icon = String.Empty,
+                    Icon = string.Empty,
                     ClientId = clients[0].ClientId,
                     PushClient = clients[0]
                 };

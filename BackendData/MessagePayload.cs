@@ -13,5 +13,10 @@ namespace BackendData
         public string? icon { get; set; }
         public string? primarykey { get; set; }
         public string? tag { get; set; }
+        public string? subtitle { get; set; }
+        public string? category { get; set; }
+        public string? sound { get; set; }
+        public string? url { get;set; }
+
     }
 }

@@ -16,4 +16,32 @@
     <PackageReference Include="System.Runtime.Caching" Version="7.0.0-preview.3.22175.4" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="C:\Users\Arni.Bjorgvinsson\.nuget\packages\mongodb.driver.core\2.15.0\build\..\runtimes\osx\native\libsnappy64.dylib" Link="proj_files\libsnappy64.dylib" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="C:\Users\Arni.Bjorgvinsson\.nuget\packages\mongodb.driver.core\2.15.0\build\..\runtimes\linux\native\libsnappy64.so" Link="proj_files\libsnappy64.so" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="C:\Users\Arni.Bjorgvinsson\.nuget\packages\mongodb.driver.core\2.15.0\build\..\runtimes\win\native\libzstd.dll" Link="proj_files\libzstd.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="C:\Users\Arni.Bjorgvinsson\.nuget\packages\mongodb.driver.core\2.15.0\build\..\runtimes\osx\native\libzstd.dylib" Link="proj_files\libzstd.dylib" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="C:\Users\Arni.Bjorgvinsson\.nuget\packages\mongodb.driver.core\2.15.0\build\..\runtimes\linux\native\libzstd.so" Link="proj_files\libzstd.so" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="C:\Users\Arni.Bjorgvinsson\.nuget\packages\mongodb.driver.core\2.15.0\build\..\runtimes\win\native\snappy32.dll" Link="proj_files\snappy32.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="C:\Users\Arni.Bjorgvinsson\.nuget\packages\mongodb.driver.core\2.15.0\build\..\runtimes\win\native\snappy64.dll" Link="proj_files\snappy64.dll" />
+  </ItemGroup>
+
 </Project>
