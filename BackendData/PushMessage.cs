@@ -38,7 +38,7 @@ namespace BackendData
                     Badge = string.Empty,
                     Title = "Test",
                     Body = "Test Body",
-                    Icon = string.Empty,
+                    Icon = "../images/icon-192x192.png",
                     ClientId = clients[0].ClientId,
                     PushClient = clients[0]
                 };

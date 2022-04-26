@@ -34,12 +34,9 @@
         }
     }
     clients = null;
-    p = null;
 }
 <script type="text/javascript" src="assets/vendors/jquery/dist/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.3/fetch.min.js"></script>
-
-
 
 <div class="form-group d-flex align-items-center">
     <div class="switch m-r-10">
@@ -54,7 +51,6 @@ var notifyBox = document.getElementById("cbNotifyAllowed");
 var lbl = document.getElementById("lblNotifyTxt");
 if ('serviceWorker' in navigator) 
 {
-    console.log("service worker is in navigator");
     navigator.serviceWorker.register('/assets/js/sworker.js').then(function (swReg) {
     swRegistration = swReg;}).catch(function (error){console.error('Service Worker Error', error);});
     var notificationSettingFromLocalStorage = localStorage.getItem("PushNotificationsAllowed");
@@ -75,7 +71,6 @@ else
 
 function fnUpdateNotify() 
 {
-    console.log(notifyBox.checked);
     if (notifyBox.checked) 
     {
         localStorage.setItem("PushNotificationsAllowed", 'true');
@@ -91,27 +86,26 @@ function fnUpdateNotify()
 'use strict';
 const applicationServerPublicKey = 'BPamIAYhRbA8FL7dSmPpVo1vv3StKcpAPVl6Xg_e2WiQKnfz-WvXBFheOL0Mxzwr2kmGAwPR1IrJXWOytqe9jWU';
 
-function urlB64ToUint8Array(base64String) {
-                    const padding = '='.repeat((4 - base64String.length % 4) % 4);
-                    const base64 = (base64String + padding)
-                      .replace(/\-/g, '+')
-                      .replace(/_/g, '/');
+function urlB64ToUint8Array(base64String) 
+{
+                        const padding = '='.repeat((4 - base64String.length % 4) % 4);
+                        const base64 = (base64String + padding)
+                          .replace(/\-/g, '+')
+                          .replace(/_/g, '/');
 
-                    const rawData = window.atob(base64);
-                    const outputArray = new Uint8Array(rawData.length);
+                        const rawData = window.atob(base64);
+                        const outputArray = new Uint8Array(rawData.length);
 
-                    for (let i = 0; i < rawData.length; ++i) {
-                        outputArray[i] = rawData.charCodeAt(i);
-                    }
-                    return outputArray;
+                        for (let i = 0; i < rawData.length; ++i) {
+                            outputArray[i] = rawData.charCodeAt(i);
+                        }
+                        return outputArray;
 }
 
 function updateSubscriptionOnServer(subscription) 
 {
-    console.log(subscription);
     if (subscription) 
     {
-        console.log(JSON.stringify(subscription));
         localStorage.setItem("push-sub", JSON.stringify(subscription));
         $.ajax({
             contentType: "application/json",
@@ -122,7 +116,6 @@ function updateSubscriptionOnServer(subscription)
             contentType: 'application/json; charset=utf-8',
             success: function (data) 
             {
-                console.log("response is " + data);
                 if (data != '') 
                 {
                     localStorage.setItem("clientid", data);
@@ -149,7 +142,6 @@ function subscribeUser()
         { 
             console.log('Permission has been approved in browser.');
             updateSubscriptionOnServer(subscription);
-            isSubscribed = true;
         }).catch(function (err) 
         {
             console.log('Failed to subscribe the user: ', err);
@@ -168,7 +160,6 @@ function unsubscribeUser()
     }).then(function () {
         if (localStorage.getItem("push-sub") != null) 
         {
-            //console.log(localStorage.getItem("push-sub"));
             $.ajax({
             contentType: "application/json",
             type: "POST",
@@ -178,14 +169,12 @@ function unsubscribeUser()
             contentType: 'application/json; charset=utf-8',
             success: function (data) 
             {
-                console.log(data);
-                            if (data == '1') 
-                            {
-                                localStorage.removeItem("clientid");
-                                localStorage.removeItem("push-sub");
-                                console.log('User is unsubscribed.');
-                                isSubscribed = false;
-                            }
+                if (data == '1')
+                {
+                    localStorage.removeItem("clientid");
+                    localStorage.removeItem("push-sub");
+                    console.log('User is unsubscribed.');
+                }
             },
             error: function(data)
             {

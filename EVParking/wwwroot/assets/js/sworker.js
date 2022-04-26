@@ -81,6 +81,7 @@ self.addEventListener("activate", function (event) {
 self.addEventListener('push', function (event) {
     var payload = JSON.parse(event.data.text());
     var title = payload.tag;
+    console.log(`[Service Worker] Push had this data: "${payload}"`);
     const options = {
         body: payload.body,
         icon: payload.icon,
