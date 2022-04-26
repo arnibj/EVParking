@@ -79,23 +79,23 @@ self.addEventListener("activate", function (event) {
 });
 
 self.addEventListener('push', function (event) {
-    console.log('[Service Worker] Push Received.');
     var payload = JSON.parse(event.data.text());
-    console.log(`[Service Worker] Push had this data: "${payload}"`);
-    var title = payload.subject;
+    var title = payload.tag;
     const options = {
         body: payload.body,
         icon: payload.icon,
         vibrate: [100, 50, 100],
-        tag: payload.tag,
-        data: { url: payload.url }
+        category: payload.category,
+        sound: payload.sound,
+        data: {
+            url: payload.url,
+            id: payload.primarykey
+        }
     };
-    event.waitUntil(self.registration.showNotification(payload.tag, options));
+    event.waitUntil(self.registration.showNotification(title, options));
 });
 
 self.addEventListener('notificationclick', function (event) {
-    console.log('[Service Worker] Notification click Received.');
-    console.log(`[Service Worker] event has this data: "${event.notification.data.url}"`);
     event.notification.close();
     event.waitUntil(
         clients.openWindow(event.notification.data.url)
