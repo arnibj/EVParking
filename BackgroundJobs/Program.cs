@@ -55,8 +55,8 @@ namespace BackgroundJobs
                             tag = m.Title,
                             category = "category",
                             subtitle = "sub-title",
-                            url = "https://localhost:7174/Messages",
-                            sound = null
+                            url = "../../Messages",
+                            sound = "../sounds/right.wav"
                         };
 
                         var webPushClient = new WebPushClient();
