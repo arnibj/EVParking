@@ -101,4 +101,7 @@ self.addEventListener('notificationclick', function (event) {
     event.waitUntil(
         clients.openWindow(event.notification.data.url)
     );
+
+    addEventListener('notificationclose', event => { console.log('Notification was closed: ', event.notification.tag); });
+
 });
