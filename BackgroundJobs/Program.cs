@@ -26,53 +26,57 @@ namespace BackgroundJobs
 
                 var subject = @"mailto:arni.bjorgvinsson@marel.com";
 
-                PushNotification pm = new();
+                Notification pm = new();
                 
-                List<PushNotification> unsent = await pm.GetUnsentPushNotifications(pm.GetPushClient());
-                foreach (PushNotification m in unsent)
+                List<Notification> unsent = await pm.GetUnsentNotifications();
+                foreach (Notification m in unsent)
                 {
-                    if (m.PushClient != null)
+                    if (m.PushClients == null)
                     {
-                        var pushEndpoint = m.PushClient?.Endpoint;
-                        var p256dh = m.PushClient?.P256dh;
-                        var auth = m.PushClient?.Auth;
+                        continue;
+                    }
 
-                        PushSubscription subscription = new()
+                    foreach(PushClient client in m.PushClients)
+                    {
+                        if (client != null)
                         {
-                            Endpoint = pushEndpoint,
-                            P256DH = p256dh,
-                            Auth = auth
-                        };
+                            PushSubscription subscription = new()
+                            {
+                                Endpoint = client.Endpoint,
+                                P256DH = client.P256dh,
+                                Auth = client.Auth
+                            };
 
-                        var vapidDetails = new VapidDetails(subject, publicKey, privateKey);
+                            var vapidDetails = new VapidDetails(subject, publicKey, privateKey);
 
-                        MessagePayload mp = new()
-                        {
-                            body = m.Body,
-                            subject = subject,
-                            icon = m.Icon,
-                            primarykey = m.Id.ToString(),
-                            tag = m.Title,
-                            category = "category",
-                            subtitle = "sub-title",
-                            url = "../../Messages",
-                            sound = "../sounds/right.wav"
-                        };
+                            MessagePayload mp = new()
+                            {
+                                body = m.Body,
+                                subject = subject,
+                                icon = m.Icon,
+                                primarykey = m.Id.ToString(),
+                                tag = m.Title,
+                                category = "category",
+                                subtitle = "sub-title",
+                                url = "../../Messages",
+                                sound = "../sounds/right.wav"
+                            };
 
-                        var webPushClient = new WebPushClient();
-                        try
-                        {
-                            Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(mp));
-                            await webPushClient.SendNotificationAsync(subscription, Newtonsoft.Json.JsonConvert.SerializeObject(mp), vapidDetails);
+                            var webPushClient = new WebPushClient();
+                            try
+                            {
+                                Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(mp));
+                                await webPushClient.SendNotificationAsync(subscription, Newtonsoft.Json.JsonConvert.SerializeObject(mp), vapidDetails);
+                            }
+                            catch (WebPushException exception)
+                            {
+                                Console.WriteLine("Http STATUS code" + exception.StatusCode);
+                            }
+                            m.Sent = true;
+                            //todo update message as sent
+
+                            Console.WriteLine(DateTime.Now + " | Message sent " + m.Body + " " + client.UserId);
                         }
-                        catch (WebPushException exception)
-                        {
-                            Console.WriteLine("Http STATUS code" + exception.StatusCode);
-                        }
-                        m.Sent = true;
-                        //todo update message as sent
-
-                        Console.WriteLine(DateTime.Now + " | Message sent " + m.Body + " " + m.PushClient?.UserName);
                     }
                 }
             }

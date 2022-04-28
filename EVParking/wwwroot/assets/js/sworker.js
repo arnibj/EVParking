@@ -17,6 +17,7 @@ self.addEventListener("install", function (event) {
         })
     );
 });
+
 self.addEventListener("fetch", function (event) {
     if (event.request.method !== 'GET') { return; }
     if (event.request.url.toLowerCase().indexOf('.aspx') !== -1) { return; }
@@ -97,11 +98,10 @@ self.addEventListener('push', function (event) {
 });
 
 self.addEventListener('notificationclick', function (event) {
+    console.log('Notification was clicked: ', event.notification.data.id);
     event.notification.close();
     event.waitUntil(
-        clients.openWindow(event.notification.data.url)
+        clients.openWindow(event.notification.data.url + "/?id=" + event.notification.data.id)
     );
-
-    addEventListener('notificationclose', event => { console.log('Notification was closed: ', event.notification.tag); });
-
 });
+

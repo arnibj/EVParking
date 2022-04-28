@@ -11,7 +11,7 @@ namespace BackendData
         /// Class to handle Push clients, which represents devices that can be used to send push notifications by the system
         /// </summary>
         private readonly IMongoCollection<PushClient> clientCollection;
-        private ObjectCache cache = MemoryCache.Default;
+        private readonly ObjectCache cache = MemoryCache.Default;
 
         #region Properties
         [BsonId]
@@ -22,7 +22,7 @@ namespace BackendData
         public string? Endpoint { get; set; }
         public string? Auth { get; set; }
         public DateTime DateAdded { get; set; }
-        public string? UserName { get; set; }
+        public Guid UserId { get; set; }
         #endregion
 
         public PushClient()
@@ -40,22 +40,19 @@ namespace BackendData
             if (p == null)
                 return false;
 
-            if (p.UserName == null)
-                return false;
-
-                PushClient client = new()
-                {
-                    ClientId = p.ClientId,
-                    P256dh = p.P256dh,
-                    ExpirationTime = p.ExpirationTime,
-                    Endpoint = p.Endpoint, 
-                    Auth = p.Auth,
-                    DateAdded = p.DateAdded,
-                    UserName = p.UserName
-                };
-                await clientCollection.InsertOneAsync(client);
-                cache.Remove("PushClients");
-            
+            PushClient client = new()
+            {
+                ClientId = p.ClientId,
+                P256dh = p.P256dh,
+                ExpirationTime = p.ExpirationTime,
+                Endpoint = p.Endpoint,
+                Auth = p.Auth,
+                DateAdded = p.DateAdded,
+                UserId = p.UserId
+            };
+            await clientCollection.InsertOneAsync(client);
+            cache.Remove("PushClients");
+            cache.Remove("PushClients_" + p.UserId);
             return true;
         }
 
@@ -74,6 +71,7 @@ namespace BackendData
                 FilterDefinition<PushClient> idFilterDefinition = Builders<PushClient>.Filter.Eq(client => client.ClientId, p.ClientId);
                 await clientCollection.DeleteOneAsync(idFilterDefinition);
                 cache.Remove("PushClients");
+                cache.Remove("PushClients_" + p.UserId);
                 return true;
             }
             catch
@@ -102,6 +100,31 @@ namespace BackendData
                 list = result.ToList();
                 cache.Add("PushClients", list, cacheItemPolicy);
                 return (List<PushClient>)list;
+            }
+            catch (Exception ex)
+            {
+                utility.LogException(ex);
+            }
+            return new List<PushClient>();
+        }
+
+        public async Task<List<PushClient>> GetItemsByUserId(Guid userId)
+        {
+            try
+            {
+                List<PushClient> list = new();
+
+                if (cache.Get("PushClients_" + userId) != null)
+                {
+                    list = (List<PushClient>)cache.Get("PushClients_" + userId);
+                    return list;
+                }
+                PushClient i = new();
+                FilterDefinition<PushClient> filter = Builders<PushClient>.Filter.Eq(f => f.UserId, userId);
+                var result = await i.clientCollection.FindAsync(filter);
+                list = result.ToList();
+                cache.Add("PushClients_" + userId, list, cacheItemPolicy);
+                return list;
             }
             catch (Exception ex)
             {
