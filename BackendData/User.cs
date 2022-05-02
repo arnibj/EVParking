@@ -60,6 +60,12 @@ namespace BackendData
             return items.SingleOrDefault(l => l.Id == id);
         }
 
+        public async Task<User?> GetUserByEmailAsync(string email)
+        {
+            List<User> items = await GetItemsFromMongo();
+            return items.SingleOrDefault(l => l.Email == email);
+        }
+
         public async Task<User?> GetUserByIdAsync(string email)
         {
             List<User> items = await GetItemsFromMongo();

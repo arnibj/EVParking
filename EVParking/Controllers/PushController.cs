@@ -35,10 +35,19 @@ namespace EVParking.Controllers
                     var user = PushClient.ReturnUserClaimTypeValue((ClaimsIdentity)User.Identity, "preferred_username");
                     if (s != null && !string.IsNullOrEmpty(user))
                     {
+                        User u = new();
+                        var dbUser = await u.GetUserByEmailAsync(user);
+                        if(dbUser == null)
+                        {
+                            h.LogTrace("dbUser not found " + user);
+                            return String.Empty;
+                        }
+
                         if (!s.ExpirationTime.HasValue)
                         {
                             s.ExpirationTime = DateTime.Now.AddYears(10);
                         }
+
                         Guid clientID = Guid.NewGuid();
                         PushClient p = new()
                         {
@@ -46,7 +55,7 @@ namespace EVParking.Controllers
                             ExpirationTime = s.ExpirationTime,
                             Endpoint = s.Endpoint,
                             Auth = s.Keys?.Auth,
-                            UserName = user,
+                            UserId = dbUser.Id,
                             DateAdded = DateTime.Now,
                             ClientId = clientID
                         };
