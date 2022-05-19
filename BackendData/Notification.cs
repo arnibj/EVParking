@@ -43,8 +43,8 @@ namespace BackendData
                 {
                     Id = 1,
                     Badge = string.Empty,
-                    Title = "Test",
-                    Body = "Test Body",
+                    Title = "Charging completed",
+                    Body = "Your car is fully charged, please move it as soon as possible from the charging space",
                     Icon = "../images/icon-192x192.png",
                     UserId = clients[0].UserId,
                     PushClients = new List<PushClient>
