@@ -44,11 +44,20 @@ namespace BackendData
             Left = 2
         }
 
+        public enum Section
+        {
+            Undefined = 0,
+            Austurhraun9N = 1,
+            Austurhraun9S = 2,
+            Austurhraun7 = 3,
+        }
+
         /// <summary>
         /// A sub-class of a station that describes a charging port
         /// </summary>
         public class Charger
         {
+            public Guid ChargerId { get; set; }
             public SidePosition Side { get; set; }
             public PlugType Plug { get; set; }
             public bool IsActive { get; set; }
@@ -68,6 +77,7 @@ namespace BackendData
         public int Number { get; set; }
         public List<Charger> Chargers { get; set; }
         public string? Details { get; set; } = string.Empty;
+        public Section ParkingSection { get; set; } = Section.Undefined;
 
 
         /// <summary>
@@ -97,7 +107,7 @@ namespace BackendData
                 Station i = new();
                 var result = await i.stationCollection.FindAsync(FilterDefinition<Station>.Empty);
                 list = result.ToList()
-                    .OrderBy(o => o.Number)
+                    .OrderBy(o => o.ParkingSection)
                     .ToList();
 
                 foreach(Station s in list)
@@ -142,7 +152,7 @@ namespace BackendData
             bool add = true;
             if(existingStations != null)
             {
-                if (existingStations.Any(s => s.Number == station.Number))
+                if (existingStations.Any(s => s.Number == station.Number && s.ParkingSection == station.ParkingSection))
                 {
                     add = false;
                 }
@@ -172,10 +182,10 @@ namespace BackendData
         /// </summary>
         /// <param name="number">Station number</param>
         /// <returns>Station object</returns>
-        public async Task<Station?> GetStationByNumberAsync(int number)
+        public async Task<Station?> GetStationByNumberAndSectionAsync(int number, Section section)
         {
             List<Station> items = await Get();
-            return items.SingleOrDefault(l => l.Number == number);
+            return items.SingleOrDefault(l => l.Number == number && l.ParkingSection == section);
         }
 
         /// <summary>
@@ -204,52 +214,157 @@ namespace BackendData
         {
             try
             {
-                for(int i = 1; i <= 20; i++)
+                for(int i = 1; i <= 10; i++)
+                {
+                    if (i != 8 || i != 9)
+                    {
+                        Station s = new();
+                        s.Number = i;
+                        s.Name = $"Station {i}";
+                        s.Details = "Austurhraun 9";
+                        s.ParkingSection = Section.Austurhraun9N;
+                        s.Id = Guid.NewGuid();
+
+                        Charger left = new()
+                        {
+                            ChargerId = Guid.NewGuid(),
+                            Plug = PlugType.Type2,
+                            Status = State.Available,
+                            Side = SidePosition.Left,
+                            IsActive = true
+                        };
+                        s.Chargers.Add(left);
+
+                        Charger right = new()
+                        {
+                            ChargerId = Guid.NewGuid(),
+                            Plug = PlugType.Type2,
+                            Status = State.Available,
+                            Side = SidePosition.Right,
+                            IsActive = true
+                        };
+                        s.Chargers.Add(right);
+
+                        await Add(s);
+                    }
+                }
+
+                //Updates
+                Station? st1 = await GetStationByNumberAndSectionAsync(1, Section.Austurhraun9N);
+                if (st1 != null)
+                {
+                    st1.Chargers[0].Plug = PlugType.BringYourOwnCable;
+                    st1.Chargers[1].Plug = PlugType.BringYourOwnCable;
+                    st1.Chargers[1].Status = State.OverTimeLimit;
+                    await Update(st1);
+                }
+
+                Station? st2 = await GetStationByNumberAndSectionAsync(2, Section.Austurhraun9N);
+                if (st2 != null)
+                {
+                    st2.Chargers[0].Plug = PlugType.BringYourOwnCable;
+                    st2.Chargers[1].Plug = PlugType.BringYourOwnCable;
+                    await Update(st2);
+                }
+
+                Station? st5 = await GetStationByNumberAndSectionAsync(5, Section.Austurhraun9N);
+                if (st5 != null)
+                {
+                    st5.Chargers[0].Plug = PlugType.Type1;
+                    st5.Chargers[0].Status = State.OverTimeLimit;
+                    st5.Chargers[1].Plug = PlugType.Type1;
+                    st5.Chargers[1].Status = State.Charging;
+                    await Update(st5);
+                }
+
+                Station? st7 = await GetStationByNumberAndSectionAsync(7, Section.Austurhraun9N);
+                if (st7 != null)
+                {
+                    st7.Chargers[0].Plug = PlugType.Type1;
+                    st7.Chargers[1].Plug = PlugType.Type1;
+                    await Update(st7);
+                }
+
+                for (int i = 5; i <= 8; i++)
                 {
                     Station s = new();
                     s.Number = i;
                     s.Name = $"Station {i}";
                     s.Details = "Austurhraun 9";
+                    s.ParkingSection = Section.Austurhraun9S;
 
-                    Charger left = new();
-                    left.Plug = PlugType.Type2;
-                    left.Status = State.Available;
-                    left.Side = SidePosition.Left;
-                    left.IsActive = true;
+                    Charger left = new()
+                    {
+                        ChargerId = Guid.NewGuid(),
+                        Plug = PlugType.Type2,
+                        Status = State.Available,
+                        Side = SidePosition.Left,
+                        IsActive = true
+                    };
                     s.Chargers.Add(left);
 
-                    Charger right = new();
-                    right.Plug = PlugType.Type2;
-                    right.Status = State.Available;
-                    right.Side = SidePosition.Right;
-                    right.IsActive = true;
+                    Charger right = new()
+                    {
+                        ChargerId = Guid.NewGuid(),
+                        Plug = PlugType.Type2,
+                        Status = State.Available,
+                        Side = SidePosition.Right,
+                        IsActive = true
+                    };
                     s.Chargers.Add(right);
 
                     s.Id = Guid.NewGuid();
-                    
+
                     await Add(s);
                 }
 
-                //test update
-                Station? st1 = await GetStationByNumberAsync(1);
-                if (st1 != null)
+                Station? st6 = await GetStationByNumberAndSectionAsync(6, Section.Austurhraun9S);
+                if (st6 != null)
                 {
-                    st1.Chargers[0].Plug = PlugType.Type1;
-                    st1.Chargers[1].Plug = PlugType.Type1;
-                    st1.Chargers[1].Status = State.OverTimeLimit;
-                    await Update(st1);
+                    st6.Chargers[0].Plug = PlugType.Type1;
+                    st6.Chargers[1].Plug = PlugType.Type1;
+                    await Update(st6);
                 }
 
-                Station? st5 = await GetStationByNumberAsync(5);
-                if (st5 != null)
+                for (int i = 1; i <= 4; i++)
                 {
-                    st5.Chargers[0].Plug = PlugType.BringYourOwnCable;
-                    st5.Chargers[0].Status = State.OverTimeLimit;
-                    st5.Chargers[1].Plug = PlugType.BringYourOwnCable;
-                    st5.Chargers[1].Status = State.Charging;
-                    await Update(st5);
-                }
+                    Station s = new();
+                    s.Number = i;
+                    s.Name = $"Station {i}";
+                    s.Details = "Austurhraun 7";
+                    s.ParkingSection = Section.Austurhraun7;
 
+                    Charger left = new()
+                    {
+                        ChargerId = Guid.NewGuid(),
+                        Plug = PlugType.Type2,
+                        Status = State.Available,
+                        Side = SidePosition.Left,
+                        IsActive = true
+                    };
+                    s.Chargers.Add(left);
+
+                    Charger right = new()
+                    {
+                        ChargerId = Guid.NewGuid(),
+                        Plug = PlugType.Type2,
+                        Status = State.Available,
+                        Side = SidePosition.Right,
+                        IsActive = true
+                    };
+                    s.Chargers.Add(right);
+
+                    s.Id = Guid.NewGuid();
+
+                    await Add(s);
+                }
+                Station? st3 = await GetStationByNumberAndSectionAsync(3, Section.Austurhraun7);
+                if (st3 != null)
+                {
+                    st3.Chargers[0].Plug = PlugType.Type1;
+                    st3.Chargers[1].Plug = PlugType.Type1;
+                    await Update(st3);
+                }
             }
             catch (Exception ex)
             {

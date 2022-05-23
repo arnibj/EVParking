@@ -8,8 +8,7 @@
         List<BackendData.Station> stations = await s.Get();
         foreach(BackendData.Station station in stations)
         {
-            <dt><a href="/station/?id=@station.Id">@station.Name</a></dt>
-            <dt>@station.Number.ToString()</dt>
+            <dt><a href="/station/?id=@station.Id">@station.ParkingSection  - @station.Name</a></dt>
         }
     }
 </dl>
