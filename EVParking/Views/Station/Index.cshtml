@@ -1,0 +1,46 @@
+﻿@using BackendData
+@using Microsoft.AspNetCore.Http.Extensions
+@using static BackendData.Station
+
+@{
+    ViewData["Title"] = "Station";
+    Station? s = new();
+    Microsoft.Extensions.Primitives.StringValues queryVal;
+    if (Context.Request.Query.TryGetValue("id", out queryVal))
+    {
+        s = await s.GetStationByIdAsync(Guid.Parse(queryVal));     
+    }
+    List<Charger> chargers = new();
+    string stationName = string.Empty;
+    string stationDetails = string.Empty;
+    if (s != null)
+    {
+        stationName = s.Name;
+        if(s.Details != null)
+        {
+            stationDetails = s.Details;   
+        }
+        chargers = s.Chargers;
+    }
+
+    string qrCode = "https://api.qrserver.com/v1/create-qr-code/?data=" + @Context.Request.Scheme + "://" + Context.Request.Host + Context.Request.Path + "?id=" + queryVal + "&size=200x200";
+}
+
+<h1>@stationName</h1>
+<b>@stationDetails</b>
+<img src='@qrCode' alt='Station QR code' title="Station QR code" style='position:absolute;top:80px;right:20px' />
+<hr />
+<h6>Chargers:</h6>
+@{
+    foreach(Charger charger in chargers)
+    {
+        <dt>@charger.Side side - @charger.Plug</dt>
+        <dd class='@charger.DisplayClass' style='width:150px'>@charger.Status</dd>
+        <button class="btn btn-default" id="btnAction">Start charging</button><br /><br />
+    }
+}
+
+<br />
+<p>
+    <a class="btn btn-primary" href="/">Back</a>
+</p>

@@ -99,7 +99,7 @@ namespace BackendData
                 var result = await i.clientCollection.FindAsync(FilterDefinition<PushClient>.Empty);
                 list = result.ToList();
                 cache.Add("PushClients", list, cacheItemPolicy);
-                return (List<PushClient>)list;
+                return list;
             }
             catch (Exception ex)
             {

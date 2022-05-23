@@ -30,7 +30,8 @@ namespace BackendData
             Broken = 0,
             PluggedInButIdle  = 1,  //plugged in not charging
             Charging = 2,
-            Available = 3
+            Available = 3,
+            OverTimeLimit = 4
         }
 
         /// <summary>
@@ -52,6 +53,7 @@ namespace BackendData
             public PlugType Plug { get; set; }
             public bool IsActive { get; set; }
             public State Status { get; set; }
+            public string DisplayClass { get; set; } = "alert-primary";
 
         }
         #endregion
@@ -63,12 +65,14 @@ namespace BackendData
         [BsonElement("_id")]
         public Guid Id { get; set; }
         public string Name { get; set; }  
-        public int Number { get; set; }  
+        public int Number { get; set; }
         public List<Charger> Chargers { get; set; }
-        public string? Details { get; set; }
+        public string? Details { get; set; } = string.Empty;
 
 
-
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public Station()
         {
             stationCollection = db.GetCollection<Station>("Stations");
@@ -96,6 +100,21 @@ namespace BackendData
                     .OrderBy(o => o.Number)
                     .ToList();
 
+                foreach(Station s in list)
+                {
+                    foreach(Charger charger in s.Chargers)
+                    {
+                        if(charger.Status == State.Available)
+                        {
+                            charger.DisplayClass = "alert-success";
+                        }
+                        else if(charger.Status == State.OverTimeLimit)
+                        {
+                            charger.DisplayClass = "alert-danger";
+                        }
+                    }
+                }
+
                 if (list.Count == 0)
                 {
                     CreateStations();
@@ -119,9 +138,63 @@ namespace BackendData
         /// <returns>True if stored successfully</returns>
         public async Task<bool> Add(Station station)
         {
-            await stationCollection.InsertOneAsync(station);
-            cache.Remove("Stations");
-            return true;
+            List<Station> existingStations = (List<Station>)cache.Get("Stations");
+            bool add = true;
+            if(existingStations != null)
+            {
+                if (existingStations.Any(s => s.Number == station.Number))
+                {
+                    add = false;
+                }
+            }
+            if (add)
+            {
+                await stationCollection.InsertOneAsync(station);
+                cache.Remove("Stations");
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Locate station by Id
+        /// </summary>
+        /// <param name="id">Guid ID</param>
+        /// <returns>Station object</returns>
+        public async Task<Station?> GetStationByIdAsync(Guid id)
+        {
+            List<Station> items = await Get();
+            return items.SingleOrDefault(l => l.Id == id);
+        }
+
+        /// <summary>
+        /// Locate station by number
+        /// </summary>
+        /// <param name="number">Station number</param>
+        /// <returns>Station object</returns>
+        public async Task<Station?> GetStationByNumberAsync(int number)
+        {
+            List<Station> items = await Get();
+            return items.SingleOrDefault(l => l.Number == number);
+        }
+
+        /// <summary>
+        /// Station updater
+        /// </summary>
+        /// <param name="station">Station object</param>
+        /// <returns>Station object after update</returns>
+        public async Task<Station?> Update(Station station)
+        {
+            FilterDefinition<Station> filter = Builders<Station>.Filter.Eq(f => f.Id, station.Id);
+            var updateDefinition = Builders<Station>.Update
+                .Set(s => s.Name, station.Name)
+                .Set(s => s.Details, station.Details)
+                .Set(s => s.Number, station.Number)
+                .Set(s => s.Chargers[0], station.Chargers[0])
+                .Set(s => s.Chargers[1], station.Chargers[1]);
+
+            await stationCollection.UpdateOneAsync(filter, updateDefinition);
+            return await GetStationByIdAsync(station.Id);
         }
 
         /// <summary>
@@ -136,6 +209,7 @@ namespace BackendData
                     Station s = new();
                     s.Number = i;
                     s.Name = $"Station {i}";
+                    s.Details = "Austurhraun 9";
 
                     Charger left = new();
                     left.Plug = PlugType.Type2;
@@ -155,6 +229,27 @@ namespace BackendData
                     
                     await Add(s);
                 }
+
+                //test update
+                Station? st1 = await GetStationByNumberAsync(1);
+                if (st1 != null)
+                {
+                    st1.Chargers[0].Plug = PlugType.Type1;
+                    st1.Chargers[1].Plug = PlugType.Type1;
+                    st1.Chargers[1].Status = State.OverTimeLimit;
+                    await Update(st1);
+                }
+
+                Station? st5 = await GetStationByNumberAsync(5);
+                if (st5 != null)
+                {
+                    st5.Chargers[0].Plug = PlugType.BringYourOwnCable;
+                    st5.Chargers[0].Status = State.OverTimeLimit;
+                    st5.Chargers[1].Plug = PlugType.BringYourOwnCable;
+                    st5.Chargers[1].Status = State.Charging;
+                    await Update(st5);
+                }
+
             }
             catch (Exception ex)
             {
