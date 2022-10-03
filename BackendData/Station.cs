@@ -7,7 +7,7 @@ namespace BackendData
     /// <summary>
     /// The Station class constructs objects that represent charging stations
     /// </summary>
-    public class Station :DataBase
+    public class Station : DataBase
     {
         #region Enums and Sub-classes
         /// <summary>
@@ -16,26 +16,26 @@ namespace BackendData
         public enum PlugType
         {
             None = 0,
-            Type1 = 1, 
+            Type1 = 1,
             Type2 = 2,
             BringYourOwnCable = 3,
             HighSpeeed = 4
         }
 
         /// <summary>
-        /// Used to indicate the state a plug is in ie. Available, Charging etc.
+        /// Used to indicate the state a plug is in i.e. Available, Charging etc.
         /// </summary>
         public enum State
         {
             Broken = 0,
-            PluggedInButIdle  = 1,  //plugged in not charging
+            PluggedInButIdle = 1,  //plugged in not charging
             Charging = 2,
             Available = 3,
             OverTimeLimit = 4
         }
 
         /// <summary>
-        /// Used to specify on what side of a station a plug is located ie Left or Right
+        /// Used to specify on what side of a station a plug is located i.e. Left or Right
         /// </summary>
         public enum SidePosition
         {
@@ -73,7 +73,7 @@ namespace BackendData
         [BsonId]
         [BsonElement("_id")]
         public Guid Id { get; set; }
-        public string Name { get; set; }  
+        public string Name { get; set; }
         public int Number { get; set; }
         public List<Charger> Chargers { get; set; }
         public string? Details { get; set; } = string.Empty;
@@ -110,17 +110,25 @@ namespace BackendData
                     .OrderBy(o => o.ParkingSection)
                     .ToList();
 
-                foreach(Station s in list)
+                foreach (Station s in list)
                 {
-                    foreach(Charger charger in s.Chargers)
+                    foreach (Charger charger in s.Chargers)
                     {
-                        if(charger.Status == State.Available)
+                        if (charger.Status == State.Available)
                         {
                             charger.DisplayClass = "alert-success";
                         }
-                        else if(charger.Status == State.OverTimeLimit)
+                        else if (charger.Status == State.OverTimeLimit)
+                        {
+                            charger.DisplayClass = "alert-warning";
+                        }
+                        else if (charger.Status == State.Broken)
                         {
                             charger.DisplayClass = "alert-danger";
+                        }
+                        else
+                        {
+                            charger.DisplayClass = "alert-info";
                         }
                     }
                 }
@@ -130,7 +138,7 @@ namespace BackendData
                     CreateStations();
                     await Get();
                 }
-                
+
                 cache.Add("Stations", list, cacheItemPolicy);
                 return list;
             }
@@ -150,7 +158,7 @@ namespace BackendData
         {
             List<Station> existingStations = (List<Station>)cache.Get("Stations");
             bool add = true;
-            if(existingStations != null)
+            if (existingStations != null)
             {
                 if (existingStations.Any(s => s.Number == station.Number && s.ParkingSection == station.ParkingSection))
                 {
@@ -187,6 +195,39 @@ namespace BackendData
             List<Station> items = await Get();
             return items.SingleOrDefault(l => l.Number == number && l.ParkingSection == section);
         }
+        
+        /// <summary>
+        /// Gets charger by its Id
+        /// </summary>
+        /// <param name="chargerid">ChargerId guid</param>
+        /// <returns>Charger object</returns>
+        public async Task<Charger> GetChargerByIdAsync(Guid chargerid)
+        {
+            Charger charger = new();
+            List<Station> items = await Get();
+            Station? station = items.SingleOrDefault(l => l.Chargers[0].ChargerId == chargerid || l.Chargers[1].ChargerId == chargerid);
+            if (station != null)
+            {
+                if (station.Chargers[0].ChargerId == chargerid)
+                    charger = station.Chargers[0];
+                else if (station.Chargers[1].ChargerId == chargerid)
+                    charger = station.Chargers[1];
+            }
+            return charger;
+        }
+
+        /// <summary>
+        /// Get station by chargerId
+        /// </summary>
+        /// <param name="chargerid"></param>
+        /// <returns></returns>
+        public async Task<Station?> GetStationByChargerIdAsync(Guid chargerid)
+        {
+            Charger charger = new();
+            List<Station> items = await Get();
+            Station? station = items.SingleOrDefault(l => l.Chargers[0].ChargerId == chargerid || l.Chargers[1].ChargerId == chargerid);
+            return station;
+        }
 
         /// <summary>
         /// Station updater
@@ -214,7 +255,7 @@ namespace BackendData
         {
             try
             {
-                for(int i = 1; i <= 10; i++)
+                for (int i = 1; i <= 10; i++)
                 {
                     if (i != 8 || i != 9)
                     {
@@ -370,6 +411,29 @@ namespace BackendData
             {
                 utility.LogException(ex);
             }
+        }
+
+
+        /// <summary>
+        /// Update charger status
+        /// </summary>
+        /// <param name="chargerId"></param>
+        /// <param name="newState"></param>
+        /// <returns></returns>
+        public async Task<bool> UpdateChargerStatus(Guid chargerId, State newState)
+        {
+            Station? station = new();
+            station = await station.GetStationByChargerIdAsync(chargerId);
+            if (station != null)
+            {
+                Charger? charger = station.Chargers.SingleOrDefault(c => c.ChargerId == chargerId);
+                if (charger != null)
+                {
+                    charger.Status = newState;
+                }
+                await station.Update(station);
+            }
+            return true;
         }
     }
 }

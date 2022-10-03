@@ -1,0 +1,97 @@
+﻿@using BackendData
+@using Microsoft.AspNetCore.Http.Extensions
+@using static BackendData.Station
+
+
+
+@{
+    Station? s = new();
+    Charger? selectedCharger = new();
+    string details = string.Empty;
+    string station = string.Empty;
+    string chargerDetails = string.Empty;
+    Microsoft.Extensions.Primitives.StringValues queryVal;
+    if (Context.Request.Query.TryGetValue("stationid", out queryVal))
+    {
+        s = await s.GetStationByIdAsync(Guid.Parse(queryVal));
+        if (s != null){
+            details += s.Name;
+            if (Context.Request.Query.TryGetValue("chargerid", out queryVal)){
+                Charger? charger = s.Chargers.SingleOrDefault(c => c.ChargerId == Guid.Parse(queryVal.ToString()));
+                if (charger != null)
+                {
+                    details += $" {charger.Side} charger";
+                    selectedCharger = charger;
+                    
+                }
+            }
+        }
+    }
+    
+    ViewData["Title"] = details;
+}
+
+<h1>@s?.Name</h1>
+<h3>@selectedCharger?.Side side @selectedCharger?.Plug</h3>
+<span class='@selectedCharger?.DisplayClass rounded' style='margin-top:15px;padding:10px;height:20px;border:1px solid black;'>@selectedCharger?.Status</span>
+@{
+    if (selectedCharger?.Status == State.Available)
+    {
+    <a id="btnStartCharge" class="btn btn-success">Start charging</a>
+    }else if(selectedCharger?.Status == State.Charging){
+    <button id="btnStopCharge" class="btn btn-danger">Stop charging</button>
+    }
+    else if(selectedCharger?.Status == State.OverTimeLimit || selectedCharger?.Status == State.PluggedInButIdle){
+    <button id="btnUnplug" class="btn btn-primary">Unplug</button>
+    }else if(selectedCharger?.Status == State.Broken){
+    <p class="alert-danger"><label><i class="fa fa-exclamation-circle"></i> This charger is not functioning properly</label></p>
+    }
+}
+@section Scripts{
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function () {
+            var button = document.getElementById('btnStartCharge');
+            if (button != null){
+                button.addEventListener('click', function Start() {
+                    $.ajax({
+                        contentType: "application/json",
+                        type: "POST",
+                        url: "../api/charge/start/?chargerId=@selectedCharger?.ChargerId",
+                        data: "@selectedCharger?.ChargerId",
+                        withCredentials: true,
+                        contentType: 'application/json; charset=utf-8',
+                        success: function (data) {
+                            if (data == "") {
+                                document.location.reload();
+                            }
+                        },
+                        error: function (data) {
+                            console.log(data);
+                        }
+                    });
+                });
+            }
+            var button = document.getElementById('btnStopCharge');
+            if (button != null) {
+                button.addEventListener('click', function Start() {
+                    $.ajax({
+                        contentType: "application/json",
+                        type: "POST",
+                        url: "../api/charge/stop/?chargerId=@selectedCharger?.ChargerId",
+                        data: "@selectedCharger?.ChargerId",
+                        withCredentials: true,
+                        contentType: 'application/json; charset=utf-8',
+                        success: function (data) {
+                            if (data == "") {
+                                document.location.reload();
+                            }
+                        },
+                        error: function (data) {
+                            console.log(data);
+                        }
+                    });
+                });
+            }
+        });
+    </script>
+}

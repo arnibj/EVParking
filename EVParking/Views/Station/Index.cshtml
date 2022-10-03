@@ -31,28 +31,32 @@
         {
             chargerLeft = leftCharger.ChargerId.ToString();
         }
-        
+
         var rightCharger = chargers.SingleOrDefault(c => c.Side == SidePosition.Right);
         if(rightCharger != null)
         {
             chargerRight = rightCharger.ChargerId.ToString();
         }
     }
+    string qrCodeLeft = "https://api.qrserver.com/v1/create-qr-code/?data=" + @Context.Request.Scheme + "://" + Context.Request.Host + $"charger/?stationid={queryVal}&chargerId={chargerLeft}&size=200x200";
+    string qrCodeRight = "https://api.qrserver.com/v1/create-qr-code/?data=" + @Context.Request.Scheme + "://" + Context.Request.Host + $"charger/?stationid={queryVal}&chargerId={chargerRight}&size=200x200";
 
-    string qrCodeLeft = "https://api.qrserver.com/v1/create-qr-code/?data=" + @Context.Request.Scheme + "://" + Context.Request.Host + Context.Request.Path + "?id=" + chargerLeft + "&size=200x200";
-    string qrCodeRight = "https://api.qrserver.com/v1/create-qr-code/?data=" + @Context.Request.Scheme + "://" + Context.Request.Host + Context.Request.Path + "?id=" + chargerLeft + "&size=200x200";
+    string linkLeft = $"{@Context.Request.Scheme}://{Context.Request.Host}/charger/?stationid={queryVal}&chargerId={chargerLeft}";
+    string linkRight = $"{@Context.Request.Scheme}://{Context.Request.Host}/charger/?stationid={queryVal}&chargerId={chargerRight}";
 }
 
 <h1>@stationName</h1>
 <b>@stationDetails</b>
 <div style="position:absolute;top:80px;right:20px">
     <div style="width:100%;font-weight:bold;text-align:center">Right charger:</div>
-<img src='@qrCodeRight' alt='Right charger QR code' title="Right charger QR code" />
+    <a href='@linkRight' title='@linkRight'>
+<img src='@qrCodeRight' /></a>
 </div>
 
 <div style="position:absolute;top:320px;right:20px">
     <div style="width:100%;font-weight:bold;text-align:center">Left charger:</div>
-<img src='@qrCodeLeft' alt='Left charger QR code' title="Left charger QR code" />
+    <a href='@linkLeft' title='Left charger QR code'>
+<img src='@qrCodeLeft' alt='Left charger QR code' title="Left charger QR code" /></a>
 </div>
 
 
@@ -61,9 +65,8 @@
 @{
     foreach(Charger charger in chargers)
     {
-    <dt>@charger.Side side - @charger.Plug</dt>
-    <dd class='@charger.DisplayClass' style='width:150px'>@charger.Status</dd>
-    <button class="btn btn-default" id="btnAction">Start charging</button><br /><br />
+        <dt>@charger.Side side - @charger.Plug</dt>
+        <dd class='@charger.DisplayClass' style='width:150px'>@charger.Status</dd>
     }
 }
 
