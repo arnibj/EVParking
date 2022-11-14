@@ -245,6 +245,7 @@ namespace BackendData
                 .Set(s => s.Chargers[1], station.Chargers[1]);
 
             await stationCollection.UpdateOneAsync(filter, updateDefinition);
+            cache.Remove("Stations");
             return await GetStationByIdAsync(station.Id);
         }
 

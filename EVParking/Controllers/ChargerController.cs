@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using static BackendData.Station;
 using static EVParking.Controllers.PushController;
+using static System.Collections.Specialized.BitVector32;
 
 namespace EVParkingWeb.Controllers
 {
@@ -64,8 +65,10 @@ namespace EVParkingWeb.Controllers
             }
             else
             {
+                Station station = new();
+                await station.UpdateChargerStatus(chargerId, State.Available);
                 utility.LogTrace($"Error locating active charge for charger {chargerId}");
-                return $"Error locating active charge for charger {chargerId}";
+                //return $"Error locating active charge for charger {chargerId}";
             }
 
             return string.Empty;

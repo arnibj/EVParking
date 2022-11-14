@@ -47,18 +47,21 @@
 
 <h1>@stationName</h1>
 <b>@stationDetails</b>
-<div style="position:absolute;top:80px;right:20px">
-    <div style="width:100%;font-weight:bold;text-align:center">Right charger:</div>
-    <a href='@linkRight' title='@linkRight'>
-<img src='@qrCodeRight' /></a>
-</div>
 
-<div style="position:absolute;top:320px;right:20px">
+
+
+    <div style="position:absolute;top:80px;right:20px">
     <div style="width:100%;font-weight:bold;text-align:center">Left charger:</div>
     <a href='@linkLeft' title='Left charger QR code'>
 <img src='@qrCodeLeft' alt='Left charger QR code' title="Left charger QR code" /></a>
 </div>
 
+<div style="position:absolute;top:320px;right:20px">
+    <div style="width:100%;font-weight:bold;text-align:center">Right charger:</div>
+    <a href='@linkRight' title='@linkRight'>
+        <img src='@qrCodeRight' />
+    </a>
+</div>
 
 <hr />
 <h6>Chargers:</h6>

@@ -1,6 +1,7 @@
 ﻿using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Driver;
 using System.Runtime.Caching;
+using System.Security.Claims;
 
 namespace BackendData
 {
@@ -88,6 +89,30 @@ namespace BackendData
         public async void DropCollection(string collectionName)
         {
             await db.DropCollectionAsync(collectionName);
+        }
+
+        /// <summary>
+        /// Helper function to acquire value from the user's claims property list
+        /// </summary>
+        /// <param name="identity">The users claims identity object</param>
+        /// <param name="type">Name of property requested</param>
+        /// <returns>Value of requested property if it exist, blank string otherwise</returns>
+        public static string ReturnUserClaimTypeValue(ClaimsIdentity identity, string type)
+        {
+            try
+            {
+                if (identity != null && identity.Claims != null && !string.IsNullOrEmpty(type))
+                {
+                    var v = identity.Claims.Where(c => c.Type == type).SingleOrDefault();
+                    if (v != null)
+                        return v.Value;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+            return String.Empty;
         }
     }
 }

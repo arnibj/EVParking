@@ -7,7 +7,7 @@ namespace BackgroundJobs
     {
         public static readonly string publicKey = "BPamIAYhRbA8FL7dSmPpVo1vv3StKcpAPVl6Xg_e2WiQKnfz-WvXBFheOL0Mxzwr2kmGAwPR1IrJXWOytqe9jWU";
         public static readonly string privateKey = "wwQoOT0ehNfFgtpUnaUhNEzuCtuIg-qlWO2DqHrP5zQ";
-
+        private Timer _timer = null;
         public static void Main()
         {
             MainAsync().GetAwaiter().GetResult();
@@ -15,6 +15,14 @@ namespace BackgroundJobs
         public static async Task MainAsync()
         {
             Console.WriteLine("Starting up...");
+            Timer t = new Timer(TimerCallback, null, 0, 60000);
+            Console.ReadLine();
+        }
+
+        private static async void TimerCallback(Object o)
+        {
+            // Display the date/time when this method got called.
+            Console.WriteLine("In TimerCallback: " + DateTime.Now);
             await SendPushNotifications();
         }
 
@@ -27,7 +35,7 @@ namespace BackgroundJobs
                 var subject = @"mailto:arni.bjorgvinsson@marel.com";
 
                 Notification pm = new();
-                
+
                 List<Notification> unsent = await pm.GetUnsentNotifications();
                 foreach (Notification m in unsent)
                 {
@@ -36,7 +44,7 @@ namespace BackgroundJobs
                         continue;
                     }
 
-                    foreach(PushClient client in m.PushClients)
+                    foreach (PushClient client in m.PushClients)
                     {
                         if (client != null)
                         {

@@ -5,7 +5,7 @@ using System.Security.Claims;
 
 namespace BackendData
 {
-    public class User :DataBase
+    public class User : DataBase
     {
         private readonly IMongoCollection<User> usersCollection;
         private ObjectCache cache = MemoryCache.Default;
@@ -60,7 +60,7 @@ namespace BackendData
             return items.SingleOrDefault(l => l.Id == id);
         }
 
-        public async Task<User?> GetUserByEmailAsync(string email)
+        public async Task<User?> GetUserByEmailAsync(string? email)
         {
             List<User> items = await GetItemsFromMongo();
             return items.SingleOrDefault(l => l.Email == email);

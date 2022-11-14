@@ -143,31 +143,5 @@ namespace BackendData
             List<PushClient> items = await GetItems();
             return items.SingleOrDefault(l => l.ClientId == clientid);
         }
-
-        /// <summary>
-        /// Helper function to aquire value from the user's claims property list
-        /// </summary>
-        /// <param name="identity">The users claims identity object</param>
-        /// <param name="type">Name of property requested</param>
-        /// <returns>Value of requested property if it exist, blank string otherwise</returns>
-        public static string ReturnUserClaimTypeValue(ClaimsIdentity identity, string type)
-        {
-            try
-            {
-                if (identity != null && identity.Claims != null && !string.IsNullOrEmpty(type))
-                {
-                    var v = identity.Claims.Where(c => c.Type == type).SingleOrDefault();
-                    if (v != null)
-                        return v.Value;
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
-            return String.Empty;
-        }
-
-
     }
 }

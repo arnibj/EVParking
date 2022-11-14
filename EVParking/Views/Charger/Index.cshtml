@@ -1,15 +1,17 @@
 ﻿@using BackendData
 @using Microsoft.AspNetCore.Http.Extensions
+@using System.Security.Claims
 @using static BackendData.Station
 
-
-
 @{
+    User u = new();
     Station? s = new();
     Charger? selectedCharger = new();
+    ChargeLog cl = new();
     string details = string.Empty;
     string station = string.Empty;
     string chargerDetails = string.Empty;
+    string currentChargeMessage = string.Empty;
     Microsoft.Extensions.Primitives.StringValues queryVal;
     if (Context.Request.Query.TryGetValue("stationid", out queryVal))
     {
@@ -22,7 +24,18 @@
                 {
                     details += $" {charger.Side} charger";
                     selectedCharger = charger;
-                    
+                    ChargeLog? currentCharge = await cl.GetCurrentCharge(null, charger.ChargerId);
+
+                    User? thisUser = await u.GetUserByEmailAsync(DataBase.ReturnUserClaimTypeValue(identity: (ClaimsIdentity)User?.Identity, "preferred_username"));
+
+                    if (currentCharge != null && currentCharge.UserId != thisUser?.Id)
+                    {
+                        currentChargeMessage = "<p><div class='alert alert-danger'><i class='fa fa-exclamation-circle'></i> This charger is assigned to another user. It's OK to close the charge if he has left the station.</div></p>";
+                    }
+                    else if (currentCharge != null && currentCharge.UserId == thisUser?.Id)
+                    {
+                        currentChargeMessage = "<p><div class='alert alert-info'><i class='fa fa-info-circle'></i> This charger is currently assigned to you</div></p>";
+                    }
                 }
             }
         }
@@ -37,14 +50,16 @@
 @{
     if (selectedCharger?.Status == State.Available)
     {
-    <a id="btnStartCharge" class="btn btn-success">Start charging</a>
-    }else if(selectedCharger?.Status == State.Charging){
-    <button id="btnStopCharge" class="btn btn-danger">Stop charging</button>
+        <a id="btnStartCharge" class="btn btn-success">Start charging</a>
     }
-    else if(selectedCharger?.Status == State.OverTimeLimit || selectedCharger?.Status == State.PluggedInButIdle){
-    <button id="btnUnplug" class="btn btn-primary">Unplug</button>
-    }else if(selectedCharger?.Status == State.Broken){
-    <p class="alert-danger"><label><i class="fa fa-exclamation-circle"></i> This charger is not functioning properly</label></p>
+    else if (selectedCharger?.Status == State.Broken)
+    {
+        <p><div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> This charger is not functioning properly</div></p>
+    }
+    else
+    {
+        <button id="btnStopCharge" class="btn btn-danger">Stop charging</button>
+        @Html.Raw(currentChargeMessage)
     }
 }
 @section Scripts{
@@ -95,3 +110,5 @@
         });
     </script>
 }
+<p></p>
+<a class="btn btn-primary" href="/station/?id=@s.Id">Back</a>
