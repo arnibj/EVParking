@@ -107,7 +107,7 @@ namespace BackendData
                 Station i = new();
                 var result = await i.stationCollection.FindAsync(FilterDefinition<Station>.Empty);
                 list = result.ToList()
-                    .OrderBy(o => o.ParkingSection)
+                    .OrderBy(o => o.ParkingSection).ThenBy(o => o.Name)
                     .ToList();
 
                 foreach (Station s in list)
@@ -133,12 +133,6 @@ namespace BackendData
                     }
                 }
 
-                if (list.Count == 0)
-                {
-                    CreateStations();
-                    await Get();
-                }
-
                 cache.Add("Stations", list, cacheItemPolicy);
                 return list;
             }
@@ -157,21 +151,16 @@ namespace BackendData
         public async Task<bool> Add(Station station)
         {
             List<Station> existingStations = (List<Station>)cache.Get("Stations");
-            bool add = true;
             if (existingStations != null)
             {
                 if (existingStations.Any(s => s.Number == station.Number && s.ParkingSection == station.ParkingSection))
                 {
-                    add = false;
+                    return false;
                 }
             }
-            if (add)
-            {
-                await stationCollection.InsertOneAsync(station);
-                cache.Remove("Stations");
-                return true;
-            }
-            return false;
+            await stationCollection.InsertOneAsync(station);
+            cache.Remove("Stations");
+            return true;
         }
 
         /// <summary>
@@ -252,10 +241,16 @@ namespace BackendData
         /// <summary>
         /// Creates 20 dummy stations
         /// </summary>
-        private async void CreateStations()
+        public async void CreateStations()
         {
             try
             {
+                var existingStations = await Get();
+                if (existingStations.Count > 0)
+                {
+                    return;
+                }
+
                 for (int i = 1; i <= 10; i++)
                 {
                     if (i != 8 || i != 9)
@@ -307,6 +302,13 @@ namespace BackendData
                     st2.Chargers[0].Plug = PlugType.BringYourOwnCable;
                     st2.Chargers[1].Plug = PlugType.BringYourOwnCable;
                     await Update(st2);
+                }
+
+                Station? st3 = await GetStationByNumberAndSectionAsync(3, Section.Austurhraun9N);
+                if (st3 != null)
+                {
+                    st3.Chargers[0].Status = State.Broken;
+                    await Update(st3);
                 }
 
                 Station? st5 = await GetStationByNumberAndSectionAsync(5, Section.Austurhraun9N);
@@ -400,12 +402,12 @@ namespace BackendData
 
                     await Add(s);
                 }
-                Station? st3 = await GetStationByNumberAndSectionAsync(3, Section.Austurhraun7);
-                if (st3 != null)
+                Station? st33 = await GetStationByNumberAndSectionAsync(3, Section.Austurhraun7);
+                if (st33 != null)
                 {
-                    st3.Chargers[0].Plug = PlugType.Type1;
-                    st3.Chargers[1].Plug = PlugType.Type1;
-                    await Update(st3);
+                    st33.Chargers[0].Plug = PlugType.Type1;
+                    st33.Chargers[1].Plug = PlugType.Type1;
+                    await Update(st33);
                 }
             }
             catch (Exception ex)

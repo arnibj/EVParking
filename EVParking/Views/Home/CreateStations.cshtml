@@ -1,0 +1,16 @@
+﻿@{
+    ViewData["Title"] = "Create stations";
+}
+<h1>@ViewData["Title"]</h1>
+
+@{
+    BackendData.Station s = new();
+    s.CreateStations();
+    List<BackendData.Station> stations = await s.Get();
+    int numberOfStations = stations.Count();
+}
+
+<b>@numberOfStations Stations have been created</b><br /><br />
+<p>
+    <a href="/home">Back</a>
+</p>

@@ -1,11 +1,8 @@
 ﻿using BackendData;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using static BackendData.Station;
-using static EVParking.Controllers.PushController;
-using static System.Collections.Specialized.BitVector32;
 
 namespace EVParkingWeb.Controllers
 {
@@ -26,7 +23,17 @@ namespace EVParkingWeb.Controllers
         [Route("api/charge/start")]
         public async Task<string> Start(Guid chargerId)
         {
-            string user = PushClient.ReturnUserClaimTypeValue(identity: (ClaimsIdentity)User?.Identity, "preferred_username");
+            if (User == null)
+            {
+                return string.Empty;
+            }
+
+            if (User.Identity is not ClaimsIdentity identity)
+            {
+                return string.Empty;
+            }
+
+            string user = DataBase.ReturnUserClaimTypeValue(identity: identity, "preferred_username");
             User u = new();
             var dbUser = await u.GetUserByEmailAsync(user);
             if (dbUser == null)
@@ -46,8 +53,18 @@ namespace EVParkingWeb.Controllers
         [Route("api/charge/stop")]
         public async Task<string> Stop(Guid chargerId)
         {
+            if (User == null)
+            {
+                return string.Empty;
+            }
+
+            if (User.Identity is not ClaimsIdentity identity)
+            {
+                return string.Empty;
+            }
+
             Utilities utility = new();
-            string user = PushClient.ReturnUserClaimTypeValue(identity: (ClaimsIdentity)User?.Identity, "preferred_username");
+            string user = DataBase.ReturnUserClaimTypeValue(identity: identity, "preferred_username");
             User u = new();
             var dbUser = await u.GetUserByEmailAsync(user);
             if (dbUser == null)
